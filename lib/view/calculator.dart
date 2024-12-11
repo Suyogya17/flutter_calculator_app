@@ -96,7 +96,7 @@ class _CalculatorViewState extends State<CalculatorView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calculator'),
+        title: const Text('Suyogya Calculator App'),
       ),
       body: Column(
         children: [
