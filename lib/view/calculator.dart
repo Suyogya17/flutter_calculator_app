@@ -12,6 +12,7 @@ class _CalculatorViewState extends State<CalculatorView> {
   String _operand = '';
   double? _firstValue;
   double? _secondValue;
+  String _operationHistory = '';
 
   void _onButtonPressed(String value) {
     setState(() {
@@ -21,6 +22,7 @@ class _CalculatorViewState extends State<CalculatorView> {
         _operand = '';
         _firstValue = null;
         _secondValue = null;
+        _operationHistory = '';
       } else if (value == '<') {
         // Backspace
         if (_displayText.length > 1) {
@@ -50,6 +52,7 @@ class _CalculatorViewState extends State<CalculatorView> {
           _displayText = '0';
         }
         _operand = value;
+        _operationHistory = '${_firstValue ?? ''} $_operand';
       } else if (value == '=') {
         // Perform calculation
         _secondValue = double.tryParse(_displayText);
@@ -74,6 +77,8 @@ class _CalculatorViewState extends State<CalculatorView> {
             default:
               break;
           }
+          _operationHistory =
+              '${_firstValue ?? ''} $_operand ${_secondValue ?? ''} =';
           _operand = '';
           _firstValue = null;
           _secondValue = null;
@@ -100,15 +105,33 @@ class _CalculatorViewState extends State<CalculatorView> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: Container(
-              alignment: Alignment.bottomRight,
-              padding: const EdgeInsets.all(16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Align(
+              alignment: Alignment.centerRight,
               child: Text(
-                _displayText,
-                style:
-                    const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+                _operationHistory,
+                style: const TextStyle(fontSize: 18, color: Colors.grey),
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextFormField(
+              controller: TextEditingController(text: _displayText),
+              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.right,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.all(12),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _displayText = value;
+                });
+              },
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
             ),
           ),
           GridView.count(
@@ -142,7 +165,9 @@ class _CalculatorViewState extends State<CalculatorView> {
                 '=',
               ])
                 ElevatedButton(
-                  onPressed: () => _onButtonPressed(value),
+                  onPressed: () {
+                    _onButtonPressed(value);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: value == '='
                         ? Colors.amber
